@@ -10,6 +10,38 @@ parameters:
   value: sample-application
 objects:
 - apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${APP_NAME}
+    name: ${APP_NAME}
+  spec: {}
+  status:
+    dockerImageRepository: ""
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${APP_NAME}  
+    name: wildfly
+  spec:
+    tags:
+    - annotations:
+        supports: wildfly:10.0,jee,java
+        tags: builder,wildfly,java
+        version: "10.0"
+      from:
+        kind: DockerImage
+        name: openshift/wildfly-101-centos7:latest
+      name: "10.0"
+    - annotations:
+        supports: jee,java
+        tags: builder,wildfly,java
+      from:
+        kind: ImageStreamTag
+        name: "10.0"
+      name: latest
+- apiVersion: v1
   kind: BuildConfig
   metadata:
     labels:
